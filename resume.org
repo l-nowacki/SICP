@@ -1,0 +1,236 @@
+*  Chapter 1 - Building Abstractions with Procedures
+** intro
+ On human understanding
+
+ 1. Combine simple ideas into complex ones
+ 2. Relating ideas without uniting them
+ 3. Separating ideas from others that accompany them in the real world -> abstraction
+
+ People -> Programs -> Process -> Data
+
+ Programming in Lisp
+
+ LISt Processign
+
+ Why LISP? Because it blurs the distinction of process and data.
+ Because it is a good language for writing interpreters
+ And above all, because it is fun
+** 1.1 The Elements Of Programming
+*** intro
+
+    When we describe languages. We should pay special attention to the mechanisms 
+    this language use to combine simple ideais into complex ones.
+
+    Every powerful language has three main ways to accomplish that:
+
+    - primitive expressions, which represent the simplest entities the language is concerned
+      with
+    - means of combination, by which compound elements are built from simpler ones, and
+    - means of abstraction, by which compound elements can be manipulated as units
+
+    Process and Data are not so different
+
+*** 1.1.1 Expressions
+
+    Combinations => (operator operands)
+    Prefix Notation
+    Pretty Printing
+    read-eval-print loop
+
+*** 1.1.2 Naming and the Environment
+
+    Using names to refer to computational process
+    (define size 2)
+    Complex programs are constructed by building, step by step, computational
+    objects of increasing complexity
+    Associating values with symbols means that the interpreter must keep track
+    of the name-object pairs. This is called the environment.
+
+*** 1.1.3 Evaluating Combinations
+
+   To evaluate a combination, the interpreter itself follow a procedure.
+   
+   - Evaluate the subexpressions of the combination
+
+   - Apply the procedure that is the value of the leftmost subexpression
+     (the operator) to the arguments that are the values of the other subexpressions
+     (the operands).
+
+   Eventually we will get to primitives:
+
+   - the values of numerals are the numbers that they name,
+
+   - the values of built-in operators are the machine instructions 
+     sequences that carry out the corresponding operations, and
+
+   - the values of other names are the objects associated with those
+     names in the environment
+
+   Exceptions are called special forms -define, if, cond, lambda, etc- and these
+   constitute the syntax of the programming language.
+
+*** 1.1.4 Compound Procedures
+
+   Procedure definitions are a powerfull abstraction technique by which a 
+   compound operation can be given a name and then be referred to as a unit.
+
+   (define (<name> <formal parameters>)
+     <body>)
+
+   Compound procedures are used in the same way as primitive procedures.
+
+*** 1.1.5 The Substitution Model for Procedure Application
+    
+    The substitution model of evaluation changes the names of procedures for their bodies.
+
+    Aplicative vs normal order
+      
+    - In aplicative order the interpreter first evaluates the sub-expressions and then expands
+     
+    - In normal order the interpreter first fully expands the expression, and only then it 
+      starts evaluating the expressions.
+
+*** 1.1.6 Conditional Expressions and Predicates
+
+    (cond (<p1> <e1>) ;; clauses
+          (<p2> <e2>)
+	  ...
+	  (<pn> <en>))
+
+    Predicates are used to nomeate expressions that can be evaluated as true or false.
+
+    (if <predicate> <consequent> <alternative>)
+
+    (and <e1> ... <en>) ;; special-form
+
+    (or  <e1> ... <en>) ;; special-form
+
+    (not <e>) ;; ordinary-procedure
+
+**** exercise set1 1.1 to 1.5
+
+*** 1.1.7 Example: Square Roots by Newton's Method
+    
+    The great example of the distintiction between math and computer science.
+
+    While mathematics is more concerned with declarative descriptions. What
+    something is. Computer science is concerned with imperative ones - how to get something.
+
+    The example of the square-root is a great one.
+
+    Im mathematics a square-root of a number is defined such that 
+    the square of the square-root of a number is itself.
+
+    In computer-science, on the other hand, we are concearned with how to get to 
+    that square root.
+
+    The most common way to achieve this result is to use the Newton's method of
+    sucessive aproximations.
+
+**** exercise set2 1.6 to 1.8
+
+*** 1.1.8 Procedures as Black-Box Abstractions
+    
+    A user should not need to know how the procedure is implemented
+    in order to use it. 
+
+    A procedure can be implemented in different forms, but remain in the 
+    same abstraction. The square of x for instance, can be implemented 
+    as the multiplication of x by itself, or by a more convoluted process.
+
+    But what matters is that both the inputs and outputs of this procedure 
+    remain the same regardless of the implementation details.
+
+    This way of thinking allows programmers to think in the big-picture.
+    Instead of the little implementation details.
+
+    Is like an arquitect that is more concearned with the shape of a building than with 
+    the material of the bricks.
+
+    Bound variables? Block Structure? Lexical Scoping?
+
+** 1.2 Procedures and the Process They Generate
+*** intro
+    
+    An analogy with chess. Now we know how the pieces move, but we lack the knowledge of which 
+    moves are worth making - procedures worth defining - and the experience to predict the
+    consequences of making a move - executing a procedure.
+
+    Programming expertise as planning the course of action trough a process that we can control
+    trough procedures. Also the visualization of process trough procedures.
+
+    A procedure is a pattern for the local evolution of a computational process. 
+
+*** 1.2.1 Linear Recursion and Iteration
+
+    On two ways of computing factorials
+
+    (define (rec-factorial n)
+      (if (= n 1)
+          1
+	  (* n (rec-factorial (- n 1)))))
+	  
+
+     (define (iter-factorial n)
+       (define (fact-iter max counter)
+         (if (> counter n)
+	     max
+	     (fact-iter (* max counter) (+ counter 1))))
+       (fact-iter 1 1))
+
+     Both of them execute the same number of steps - n. 
+     But the "shape" they produce is considerably different.
+
+     While the first process - the linear recursive one - needs to expand the 
+     operations until it reaches the base case. And them go back evaluating
+     them. This requires the interpreter to track the operations to be later 
+     performed.
+
+     The second process - linear iterative - has all the information it needs
+     in its arguments.
+
+     For instance all we have is (rec-factorial 4) we cannot say if this operation is
+     part of (rec-factorial 24) or if it is the desired result. But in 
+
+     (iter factorial 8) (fact-iter 24 5) we are sure about the result.
+
+     Both of these process are recursive procedures, since both of them call themselves.
+     But do not mess this up with recursive and iterative process.
+
+     Process != Procedure
+
+     With a tail-recursive implementation real iteration can be expressed using the ordinary
+     procedure call mechanism. Oposed to languages that require special forms = such as while
+     loops - to describe such a process.
+
+**** exercise set3 1.9 to 1.10
+
+*** 1.2.2 Tree Recursion
+    
+    The fibonacci sequence can easily be translated into:
+
+    (define (fib n)
+      (cond ((= n 0) 0)
+            ((= n 1) 1)
+	    (else (+ (fib (- n 1))
+	             (fib (- n 2))))))
+
+    but this way there is a lot of reduntant computation. 
+
+    A more inteligent way to compute the same thing is an iterative one.
+
+    (define (fib n)
+      (fib-iter 1 0 n)
+    (define (fib-iter a b count)
+      (if (= count 0)
+          b
+	  (fib-iter (+ a b) a (- count 1))))
+
+**** exercise set4 1.11 to 1.13
+
+*** 1.2.3 Orders of Growth
+
+**** exercise set5 1.14 to 1.15
+
+
+    
