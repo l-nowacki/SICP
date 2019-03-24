@@ -28,7 +28,7 @@
 ;; (inc 8)
 ;; 9
 
-;; iter-add is a iterative process since all the information required to finish the process is containde
+;; iter-add is a iterative process since all the information required to finish the process is contained
 ;; in the process itself
 
 ;; (iter-add 4 5)
